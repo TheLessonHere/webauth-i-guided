@@ -1,6 +1,8 @@
 const express = require('express');
 const helmet = require('helmet');
 const cors = require('cors');
+const bcrypt = require('bcryptjs');
+const salt = bcrypt.genSaltSync(10);
 
 const db = require('./database/dbConfig.js');
 const Users = require('./users/users-model.js');
@@ -50,6 +52,12 @@ server.get('/api/users', (req, res) => {
       res.json(users);
     })
     .catch(err => res.send(err));
+});
+
+server.get('/hash', (req, res) => {
+  const name = req.query.name;
+  const hash = bcrypt.hashSync("B4c0/\/", salt);
+  res.send(`the hash for ${name} is ${hash}`);
 });
 
 const port = process.env.PORT || 5000;
