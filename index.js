@@ -61,5 +61,23 @@ server.get('/hash', (req, res) => {
   res.send(`the hash for ${name} is ${hash}`);
 });
 
+function credentialChecker (req, res, next) {
+  let ({ username, password }) = req.body;
+    Users.findBy({ username })
+    .first()
+    .then(user => {
+      bcrypt.compareSync(password, user.password)
+      if(user) {
+        next();
+      } else {
+        res.status(404).json({ error: "User does not exist" });
+      }
+    })
+    .catch(err => {
+      console.log(err);
+      res.status(500).json({ error: "Server error finding user" });
+    })
+}
+
 const port = process.env.PORT || 5000;
 server.listen(port, () => console.log(`\n** Running on port ${port} **\n`));
